@@ -194,7 +194,7 @@ data_mba <- melt(data_mba$xyz.est$z, varnames = c('Distance', 'Depth'),
 
 ## GEBCO bathymetry - import and subsetting data
 
-The bathymetry data overlaid on the section plot is prepared as shown in the following block. Bathymetry data are obtained from GEBCO, of which smaller files can be created at [https://download.gebco.net/](https://download.gebco.net/){target="_blank"} for a specific area defined by latitude and longtiude. 
+The bathymetry data overlaid on the section plot is prepared as shown in the following block. Bathymetry data are obtained from GEBCO, of which smaller files can be created at [https://download.gebco.net/](https://download.gebco.net/) for a specific area defined by latitude and longtiude. 
 The bathymetry data is subsetted to the exact latitude and longitude range in the ADCP data and to the top 1000 m. The depth.plot variable needs to match the depth chosen for the section plot below, otherwise the polygon will not fill in correctly. The last step is to create variables PolyX and PolyY for the x-axis and y-axis points of the bathymetry polygon, respectively, setting the beginning and end points of the polygon as the edges of the plot. 
 
 ```
@@ -280,28 +280,28 @@ ggplot() +
 
 ## Built With
 
-* [oce](https://cran.r-project.org/web/packages/oce/index.html){target="_blank"} - Used to import and analyse ADCP data
-* [tidyverse](https://cran.r-project.org/web/packages/tidyverse/index.html){target="_blank"} - Used to rearrange data frames
-* [leaflet](https://cran.r-project.org/web/packages/leaflet/index.html){target="_blank"} - Used to plot sampling locations
-* [sf](https://cran.r-project.org/web/packages/sf/index.html){target="_blank"} - Used to create simple feature object
-* [MBA](https://cran.r-project.org/web/packages/MBA/index.html){target="_blank"} - Used to interpolate spatially
-* [reshape2](https://cran.r-project.org/web/packages/reshape2/index.html){target="_blank"} - Used to melt wide data frame
-* [marmap](https://cran.r-project.org/web/packages/marmap/index.html){target="_blank"} - Used to import GEBCO bathymetry data
-* [ggplot2](https://cran.r-project.org/web/packages/ggplot2/index.html){target="_blank"} - Used for plotting 
-* [scales](https://cran.r-project.org/web/packages/scales/index.html){target="_blank"} - Used for plotting 
-* [metR](https://cran.r-project.org/web/packages/metR/index.html){target="_blank"} - Used with ggplot for section plot
+* [oce](https://cran.r-project.org/web/packages/oce/index.html) - Used to import and analyse ADCP data
+* [tidyverse](https://cran.r-project.org/web/packages/tidyverse/index.html) - Used to rearrange data frames
+* [leaflet](https://cran.r-project.org/web/packages/leaflet/index.html) - Used to plot sampling locations
+* [sf](https://cran.r-project.org/web/packages/sf/index.html) - Used to create simple feature object
+* [MBA](https://cran.r-project.org/web/packages/MBA/index.html) - Used to interpolate spatially
+* [reshape2](https://cran.r-project.org/web/packages/reshape2/index.html) - Used to melt wide data frame
+* [marmap](https://cran.r-project.org/web/packages/marmap/index.html) - Used to import GEBCO bathymetry data
+* [ggplot2](https://cran.r-project.org/web/packages/ggplot2/index.html) - Used for plotting 
+* [scales](https://cran.r-project.org/web/packages/scales/index.html) - Used for plotting 
+* [metR](https://cran.r-project.org/web/packages/metR/index.html) - Used with ggplot for section plot
 
 ## Versioning
 
-We use [SemVer](http://semver.org/){target="_blank"} for versioning. For the versions available, see the [tags on this repository](https://github.com/Parrott-R/Processing_OceanVelocityData/tags){target="_blank"}. 
+We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/Parrott-R/Processing_OceanVelocityData/tags). 
 
 ## Authors
 
-* **Ruan G. Parrott** - *Initial work, research, and plotting* [https://parrott-r.github.io/Me/](https://parrott-r.github.io/Me/){target="_blank"}
-* **Shantelle Smith** - *Editing, restructuring, and plotting. README file compilation.* [https://shantellesmith.github.io/](https://shantellesmith.github.io/){target="_blank"}
+* **Ruan G. Parrott** - *Initial work, research, and plotting* [https://parrott-r.github.io/Me/](https://parrott-r.github.io/Me/)
+* **Shantelle Smith** - *Editing, restructuring, and plotting. README file compilation.* [https://shantellesmith.github.io/](https://shantellesmith.github.io/)
 
-See also the list of [contributors](https://github.com/Parrott-R/Processing_OceanVelocityData/graphs/contributors){target="_blank"} who participated in this project.
+See also the list of [contributors](https://github.com/Parrott-R/Processing_OceanVelocityData/graphs/contributors) who participated in this project.
 
 ## Acknowledgments
 
-* We would like to acknowledge Masumbuko Semba, whose [blog post](https://semba-blog.netlify.app/10/15/2018/processing-adcp-data-with-r/){target="_blank"} was used to assist in the importing of the raw data and in the calculating of the absolute current velocity 
+* We would like to acknowledge Masumbuko Semba, whose [blog post](https://semba-blog.netlify.app/10/15/2018/processing-adcp-data-with-r/) was used to assist in the importing of the raw data and in the calculating of the absolute current velocity 
