@@ -1,4 +1,5 @@
 # Importing, processing, and plotting of shipboard ADCP data
+[![DOI](https://zenodo.org/badge/295239289.svg)](https://zenodo.org/badge/latestdoi/295239289)
 
 This code can be applied to any dataset of ADCP (Acoustic Doppler Current Profiler) data from shipboard instrumentation. There is capacity for the importing of 'x' number of input files. The ADCP data is used to create velocity and distance (from first sampling point; used as a substitute for latitude/longitude - it is ideal for a ship track that does not follow a longitude or latitude). The absolute velocity is calculated from the relative current velocity and the ship's average speed. 
 
