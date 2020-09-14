@@ -24,6 +24,7 @@ install.packages(marmap)
 install.packages(metR)
 install.packages(reshape2)
 ```
+The installed packages can then be loaded using library() e.g. library(oce). 
 
 ### Importing data
 
@@ -137,7 +138,7 @@ for (adcp in 1:length(adp)) {
 } # END of for loop
 ```
 
-## Compile data frames from different files
+## Compiling data frames 
 
 The data frames for each file, that are produced above, are combined and subsetted for plotting. The order of the columns in the subsetted data frame are important for the interpolation step below since the function mba.surf() uses data from the three columns in a pre-determined way, selecting each one for a specific dimension of the interpolation (i.e. x, y, z).
 
@@ -148,9 +149,9 @@ cruise.Vel <- rbind(abs.vel.profile.long[[1]],
 cruise.Vel.sel <- select(cruise.Vel, c("distance","depth","velocity"))
 ```
 
-## Interpolating the absolute current velocity with MBA
+## Interpolating the absolute current velocity using the MBA package
 
-Prior to interpolating the data, 'NA' values are removed and, as an optional extra step, the data is subsetted to include only surface data. It's advised to minimise the size of the data frame, where possible, to maximise the efficiency of mba.surf(), which is used to perform the interpolation. The interpolated data is melted into a long data frame for plotting. 
+Prior to interpolating the data, 'NA' values are removed and, as an optional extra step, the data is subsetted to include only surface data. It's advised to minimise the size of the data frame, where possible, to maximise the efficiency of mba.surf(), which is used to perform the interpolation. The interpolated data is then melted into a long data frame for plotting. 
 
 ```
 dat.var <- na.omit(cruise.Vel.sel)
@@ -163,7 +164,7 @@ data_mba <- melt(data_mba$xyz.est$z, varnames = c('Distance', 'Depth'),
                  value.name = 'velocity')
 ```
 
-## Bathymetry
+## GEBCO bathymetry - import and subsetting data
 
 The bathymetry data overlaid on the section plot is prepared as shown in the following block. Bathymetry data are obtained from GEBCO, of which smaller files can be created at https://download.gebco.net/ for a specific area defined by latitude and longtiude. 
 The bathymetry data is subsetted to the exact latitude and longitude range in the ADCP data and to the top 1000 m. The depth.plot variable needs to match the depth chosen for the section plot below, otherwise the polygon will not fill in correctly. The last step is to create variables PolyX and PolyY for the x-axis and y-axis points of the bathymetry polygon, respectively, setting the beginning and end points of the polygon as the edges of the plot. 
@@ -209,7 +210,7 @@ PolyY <- c(depth.plot,
 rm(Mybathy)
 ```
 
-## Plotting the absolute current velocity with ggplot2
+## Plotting the absolute current velocity using the ggplot2 package
 
 We created a template for a ggplot2 section plot, with a classic theme, to plot the interpolated current velocity data. We recommend ggplot2 over other R plotting packages due to the customisation possibilities. On the x-axis, distance can be replaced with longitude or latitude depending on the layout of the sampling transect. This template uses the colour blind-friendly viridis palette with a customised legend. geom_polygon is used to overlay the bathymetry.
 
