@@ -298,6 +298,7 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 
 ## Authors
 
+The authors below contributed equally.
 * **Ruan G. Parrott** - *Initial work, research, and plotting* [https://parrott-r.github.io/Me/](https://parrott-r.github.io/Me/)
 * **Shantelle Smith** - *Editing, restructuring, and plotting. README file compilation.* [https://shantellesmith.github.io/](https://shantellesmith.github.io/)
 
