@@ -71,7 +71,7 @@ percent_faulty <- c()
 ```
 The data processing is done in a for loop to allow for the input of multiple ADCP files. For this reason, it is strongly recommended to use the ensemble averaging method mentioned above if the files are very large. 
 
-The data is first bin-mapped by interpolating to uniform depths to compensate for the pitch and roll of the ship. There is an option to subset the data between specific dates/times if necessary. To confirm the locations of the sampling, the subsetted data is converted into a simplfe feature object and visualised using leaflet(). 
+The data is first bin-mapped by interpolating to uniform depths to compensate for the pitch and roll of the ship. There is an option to subset the data between specific dates/times if necessary. To confirm the locations of the sampling, the subsetted data is converted into a simple feature object and visualised using leaflet(). 
 
 Velocity is calculated from the meridional and zonal components using: velocity (in ms^−1) = sqrt(u^2+v^2) and is then used to calculate aboslute velocity by subtracting the ship's average speed. The structure of the data frame is then modified to obtain depth, profile ID, longitude, latitude, distance (calculated to be distance from station 1 using geodDist()), velocity into a single data frame for plotting later on. Spurious data is removed from this data frame using an upper limit (e.g. 2.5 ms^-1) as a cut-off for reasonable values and by changing unreasonable values to 'NA'. A percentage of spurious data is calculated and is useful for assessing general data quality e.g. in the dataset used for testing, all data above 35 m was discarded, likely due to interference from the ship. 
 
