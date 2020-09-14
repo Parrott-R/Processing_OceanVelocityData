@@ -218,7 +218,7 @@ PolyY <- c(depth.plot,
            depth.plot)
 rm(Mybathy) # remove large file to save environment memory
 
-#### Section plot: ggplot ####
+#### Section plot: ggplot2 ####
 ggplot() +
   scale_y_reverse(limits=c(400,-10), expand = c(0,0))+
   scale_x_continuous(breaks = c(0,50,100,150,200,250), expand = c(0,0))+ 

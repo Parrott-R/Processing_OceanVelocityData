@@ -258,6 +258,7 @@ ggplot() +
 * [MBA](https://cran.r-project.org/web/packages/MBA/index.html) - Used to interpolate spatially
 * [reshape2](https://cran.r-project.org/web/packages/reshape2/index.html) - Used to melt wide data frame
 * [marmap](https://cran.r-project.org/web/packages/marmap/index.html) - Used to import GEBCO bathymetry data
+* [ggplot2](https://cran.r-project.org/web/packages/ggplot2/index.html) - Used for plotting 
 * [scales](https://cran.r-project.org/web/packages/scales/index.html) - Used for plotting 
 * [metR](https://cran.r-project.org/web/packages/metR/index.html) - Used with ggplot for section plot
 
