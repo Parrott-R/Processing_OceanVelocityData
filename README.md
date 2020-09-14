@@ -293,7 +293,7 @@ ggplot() +
 
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the <a href="https://github.com/your/project/tags" target="_blank">tags on this repository</a>. 
+We use [SemVer](http://semver.org/) for versioning. For the versions available, see the <a href="https://github.com/Parrott-R/Processing_OceanVelocityData/tags" target="_blank">tags on this repository</a>. 
 
 ## Authors
 
