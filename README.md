@@ -267,12 +267,11 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 
 ## Authors
 
-* **Ruan G. Parrott** - *Initial work and research* https://parrott-r.github.io/Me/
-* **Shantelle Smith** - *Editing and plotting* https://shantellesmith.github.io/
+* **Ruan G. Parrott** - *Initial work, research, and plotting* https://parrott-r.github.io/Me/
+* **Shantelle Smith** - *Editing, restructuring, and plotting. README file compilation.* https://shantellesmith.github.io/
 
 See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
 
 ## Acknowledgments
 
 * We would like to acknowledge Masumbuko Semba, whose blog post  (https://semba-blog.netlify.app/10/15/2018/processing-adcp-data-with-r/) was used to assist in the importing of the raw data and in the calculating of the absolute current velocity 
-
