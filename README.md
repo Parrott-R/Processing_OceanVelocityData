@@ -32,9 +32,9 @@ read.adp is used to import the ADCP data and can accept files with extensions us
 You may install multiple files at once using the following:
 
 ```
-adp <- c(read.adp("AGU033002_000000.LTA"),
-         read.adp("AGU033003_000000.LTA"),
-         read.adp("AGU033004_000000.LTA"))
+adp <- c(read.adp("file1.LTA"),
+         read.adp("file2.LTA"),
+         read.adp("file3.LTA"))
 ```
 Larger ADCP data files may be pre-processed using adpEnsembleAverage() to reduce the number of profiles and to smooth the data. 
 
@@ -139,7 +139,7 @@ for (adcp in 1:length(adp)) {
 
 ## Compile data frames from different files
 
-The data frames for each file, that are produced above, are combined and subsetted for plotting. 
+The data frames for each file, that are produced above, are combined and subsetted for plotting. The order of the columns in the subsetted data frame are important for the interpolation step below since the function mba.surf() uses data from the three columns in a pre-determined way, selecting each one for a specific dimension of the interpolation (i.e. x, y, z).
 
 ```
 cruise.Vel <- rbind(abs.vel.profile.long[[1]],
@@ -148,9 +148,70 @@ cruise.Vel <- rbind(abs.vel.profile.long[[1]],
 cruise.Vel.sel <- select(cruise.Vel, c("distance","depth","velocity"))
 ```
 
+## Interpolating the absolute current velocity with MBA
+
+Prior to interpolating the data, 'NA' values are removed and, as an optional extra step, the data is subsetted to include only surface data. It's advised to minimise the size of the data frame, where possible, to maximise the efficiency of mba.surf(), which is used to perform the interpolation. The interpolated data is melted into a long data frame for plotting. 
+
+```
+dat.var <- na.omit(cruise.Vel.sel)
+surfdata <- filter(dat.var, depth < 1000) 
+
+data_mba <- mba.surf(surfdata, no.X = 300, no.Y = 300,extend = T,n=1,m=1)
+dimnames(data_mba$xyz.est$z) <- list(data_mba$xyz.est$x, 
+                                     data_mba$xyz.est$y)
+data_mba <- melt(data_mba$xyz.est$z, varnames = c('Distance', 'Depth'),
+                 value.name = 'velocity')
+```
+
+## Bathymetry
+
+The bathymetry data overlaid on the section plot is prepared as shown in the following block. Bathymetry data are obtained from GEBCO, of which smaller files can be created at https://download.gebco.net/ for a specific area defined by latitude and longtiude. 
+The bathymetry data is subsetted to the exact latitude and longitude range in the ADCP data and to the top 1000 m. The depth.plot variable needs to match the depth chosen for the section plot below, otherwise the polygon will not fill in correctly. The last step is to create variables PolyX and PolyY for the x-axis and y-axis points of the bathymetry polygon, respectively, setting the beginning and end points of the polygon as the edges of the plot. 
+
+```
+depth.plot <- 400 # change to depth of section plot
+
+# Read in GEBCO file for bathymetry data
+setwd("/path/")
+Mybathy <- readGEBCO.bathy("gebco_2020.nc")
+
+# Subset bathymetry data
+NewLatituden <- na.omit(cruise.Vel$lat)
+NewLongituden <- na.omit(cruise.Vel$lon)
+lati <- seq(min(NewLatituden), max(NewLatituden), 0.01)
+loni <- approx(NewLatituden, NewLongituden, lati, rule=2)$y
+dist <- rev(geodDist(loni, lati, alongPath=TRUE))
+bottom <- get.depth(Mybathy, x=loni, y=lati, locator=FALSE)
+bottom <- data.frame(bottom, dist)
+bottom$depth <- as.numeric(as.character(bottom$depth))
+
+BathyFull_df <- data.frame(x = c(min(dist), last(dist),
+                                 rev(dist[2:length(dist)]),
+                                 max(dist)),
+                           y= c(first(bottom$depth), last(bottom$depth),
+                                rev(bottom$depth[2:length(dist)]),
+                                first(bottom$depth)))
+
+BathySurf_df <- data.frame(BathyFull_df[["x"]][which(
+  (-BathyFull_df[["y"]] - depth.plot) <= 0)], BathyFull_df[["y"]][which(
+    (-BathyFull_df[["y"]] - depth.plot) <= 0)])
+names(BathySurf_df)[1] <- "x"
+names(BathySurf_df)[2] <- "y"
+
+# Create coords for the bathymetry
+PolyX <- c(BathySurf_df[["x"]][1],
+           BathySurf_df[["x"]][which(BathySurf_df[["y"]] > -depth.plot)],
+           last(BathySurf_df[["x"]][which(BathySurf_df[["y"]] > -depth.plot)]))
+
+PolyY <- c(depth.plot, 
+           -BathySurf_df[["y"]][which(BathySurf_df[["y"]] > -depth.plot)],
+           depth.plot)
+rm(Mybathy)
+```
+
 ## Plotting the absolute current velocity with ggplot2
 
-We created a template for a ggplot2 section plot with a classic theme. We recommend ggplot2 over other R plotting packages due to the customisation possibilities. On the x-axis, distance can be replaced with longitude or latitude depending on the layout of the sampling transect. This template uses the colour blind-friendly viridis palette with a customised legend. geom_polygon is used to overlay the bathymetry.
+We created a template for a ggplot2 section plot, with a classic theme, to plot the interpolated current velocity data. We recommend ggplot2 over other R plotting packages due to the customisation possibilities. On the x-axis, distance can be replaced with longitude or latitude depending on the layout of the sampling transect. This template uses the colour blind-friendly viridis palette with a customised legend. geom_polygon is used to overlay the bathymetry.
 
 ```
 ggplot() +
@@ -186,7 +247,7 @@ ggplot() +
         axis.title = element_text(size = 15))+
   coord_cartesian(expand = 0)
 ```
-![Absolute current velocity in the Agulhas Current.](/sample_image.png)
+![Absolute velocity in the current.](/sample_image.png)
 
 ## Built With
 
@@ -199,10 +260,6 @@ ggplot() +
 * [marmap](https://cran.r-project.org/web/packages/marmap/index.html) - Used to import GEBCO bathymetry data
 * [scales](https://cran.r-project.org/web/packages/scales/index.html) - Used for plotting 
 * [metR](https://cran.r-project.org/web/packages/metR/index.html) - Used with ggplot for section plot
-
-## Contributing
-
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
 
 ## Versioning
 

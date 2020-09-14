@@ -16,12 +16,12 @@ require(marmap)
 require(metR)
 require(reshape2)
 #### Read in x number of files containing ADCP data #####
-### Read in ADCP data (.LTA format) into list for x number of files
-setwd("/Users/shantellesmith/Downloads")
+### Read in ADCP data (multiple ADCP file formats accepted) into list for x number of files
+setwd("/path/")
 
-adp <- c(read.adp("AGU033002_000000.LTA"),
-         read.adp("AGU033003_000000.LTA"),
-         read.adp("AGU033004_000000.LTA"))
+adp <- c(read.adp("file1.LTA"),
+         read.adp("file2.LTA"),
+         read.adp("file2.LTA"))
 
 #### Process/clean raw data and create modified variables (velocity and distance) ####
 # Choose date bounds for each file (can be omitted. see cruise.adcp below)
@@ -183,21 +183,16 @@ colnames(stations) <- c('station','lat','long','depth', 'distance')
 depth.plot <- 400 # change to depth of section plot
 
 # Read in GEBCO file for bathymetry data
-setwd("/Users/shantellesmith/Downloads")
-Mybathy <- readGEBCO.bathy("gebco_2020_n-30.0_s-38.0_w17.0_e41.0.nc")
+setwd("/path/")
+Mybathy <- readGEBCO.bathy("gebco_2020.nc") # insert own file
 
 # Subset bathymetry data
-NewLatituden <- na.omit(as.numeric(as.character
-                                   (cruise.Vel$lat)))
-NewLongituden <- na.omit(as.numeric(as.character
-                                    (cruise.Vel$lon)))
-coords <- data.frame(NewLongituden, NewLatituden)
-
+NewLatituden <- na.omit(cruise.Vel$lat)
+NewLongituden <- na.omit(cruise.Vel$lon)
 lati <- seq(min(NewLatituden), max(NewLatituden), 0.01)
 loni <- approx(NewLatituden, NewLongituden, lati, rule=2)$y
 dist <- rev(geodDist(loni, lati, alongPath=TRUE))
-bottom <- get.depth(Mybathy, x=loni, y=lati, locator=FALSE)
-bottom <- data.frame(bottom, dist)
+bottom <- data.frame(get.depth(Mybathy, x=loni, y=lati, locator=FALSE), dist)
 bottom$depth <- as.numeric(as.character(bottom$depth))
 
 BathyFull_df <- data.frame(x = c(min(dist), last(dist),
@@ -214,31 +209,14 @@ names(BathySurf_df)[1] <- "x"
 names(BathySurf_df)[2] <- "y"
 
 # Create coords for the bathymetry
-PolyX <- c(BathySurf_df[["x"]][1],BathySurf_df[["x"]][1],
-           BathySurf_df[["x"]][2],
-           BathySurf_df[["x"]][3],BathySurf_df[["x"]][4],
-           BathySurf_df[["x"]][5],BathySurf_df[["x"]][6],
-           BathySurf_df[["x"]][7],BathySurf_df[["x"]][8],
-           BathySurf_df[["x"]][9],BathySurf_df[["x"]][10],
-           BathySurf_df[["x"]][11],BathySurf_df[["x"]][12],
-           BathySurf_df[["x"]][13],BathySurf_df[["x"]][14],
-           BathySurf_df[["x"]][15],BathySurf_df[["x"]][16],
-           BathySurf_df[["x"]][17],BathySurf_df[["x"]][18],
-           BathySurf_df[["x"]][19],BathySurf_df[["x"]][20],
-           BathySurf_df[["x"]][20])
+PolyX <- c(BathySurf_df[["x"]][1],
+           BathySurf_df[["x"]][which(BathySurf_df[["y"]] > -depth.plot)],
+           last(BathySurf_df[["x"]][which(BathySurf_df[["y"]] > -depth.plot)]))
+
 PolyY <- c(depth.plot, 
-           -BathySurf_df[["y"]][1],-BathySurf_df[["y"]][2],
-           -BathySurf_df[["y"]][3],-BathySurf_df[["y"]][4],
-           -BathySurf_df[["y"]][5],-BathySurf_df[["y"]][6],
-           -BathySurf_df[["y"]][7],-BathySurf_df[["y"]][8],
-           -BathySurf_df[["y"]][9],-BathySurf_df[["y"]][10],
-           -BathySurf_df[["y"]][11],-BathySurf_df[["y"]][12],
-           -BathySurf_df[["y"]][13],-BathySurf_df[["y"]][14],
-           -BathySurf_df[["y"]][15],-BathySurf_df[["y"]][16],
-           -BathySurf_df[["y"]][17],-BathySurf_df[["y"]][18],
-           -BathySurf_df[["y"]][19],-BathySurf_df[["y"]][20],
+           -BathySurf_df[["y"]][which(BathySurf_df[["y"]] > -depth.plot)],
            depth.plot)
-rm(Mybathy)
+rm(Mybathy) # remove large file to save environment memory
 
 #### Section plot: ggplot ####
 ggplot() +
@@ -274,7 +252,7 @@ ggplot() +
         axis.title = element_text(size = 15))+
   coord_cartesian(expand = 0)
 
-pathsave = "" # insert path name
+pathsave = "/path/" # insert path name
 
 ggsave(plot = last_plot(),
        filename = "sample_image.png",
