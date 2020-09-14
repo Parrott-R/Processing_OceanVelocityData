@@ -247,14 +247,14 @@ ggplot() +
   scale_y_reverse(limits=c(400,-10), expand = c(0,0))+
   scale_x_continuous(expand = c(0,0))+ 
   geom_tile(data = data_mba, aes(fill = velocity,
-                                 x= Distance, y= Depth)) + #data_mba_bound
+                                 x= Distance, y= Depth)) +
   theme_classic() +
   geom_contour(aes(z = data_mba$velocity,
                    x = data_mba$Distance,
                    y = data_mba$Depth ), 
-               binwidth = 0.15, #data_mba_bound
+               binwidth = 0.15, 
                colour = "black", alpha = 0.3) + #adds contours
-  geom_text_contour(aes(z = data_mba$velocity, #data_mba_bound
+  geom_text_contour(aes(z = data_mba$velocity, 
                         x = data_mba$Distance,
                         y = data_mba$Depth ),
                     check_overlap = TRUE, binwidth = 0.3, alpha = 0.7) +
