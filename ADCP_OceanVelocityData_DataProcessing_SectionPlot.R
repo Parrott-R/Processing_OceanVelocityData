@@ -71,8 +71,8 @@ for (adcp in 1:length(adp)) {
   lat[[adcp]] <- cruise.adcp[[adcp]][["firstLatitude"]]
   
   # Calculate velocity --> velocity in ms^−1 = √(U^2+V^2)
-  v[[adcp]] <- cruise.adcp[[adcp]][["v"]][,,1] # u component of velocity
-  u[[adcp]] <- cruise.adcp[[adcp]][["v"]][,,2] # v component of velocity
+  v[[adcp]] <- cruise.adcp[[adcp]][["v"]][,,1] # v component of velocity
+  u[[adcp]] <- cruise.adcp[[adcp]][["v"]][,,2] # u component of velocity
   vel[[adcp]] <- sqrt(v[[adcp]]^2 + u[[adcp]]^2) 
   
   ### Confirm sampling locations

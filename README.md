@@ -293,14 +293,14 @@ ggplot() +
 
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
+We use [SemVer](http://semver.org/) for versioning. For the versions available, see the <a href="https://github.com/your/project/tags" target="_blank">tags on this repository</a>. 
 
 ## Authors
 
 * **Ruan G. Parrott** - *Initial work, research, and plotting* https://parrott-r.github.io/Me/
 * **Shantelle Smith** - *Editing, restructuring, and plotting. README file compilation.* https://shantellesmith.github.io/
 
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
+See also the list of [contributors](https://github.com/Parrott-R/Processing_OceanVelocityData/graphs/contributors) who participated in this project.
 
 ## Acknowledgments
 
