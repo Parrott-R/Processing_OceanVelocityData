@@ -131,7 +131,7 @@ for (adcp in 1:length(adp)) {
   percent_faulty[[adcp]] <- length(abs.vel.profile.long[[adcp]]$velocity[which
               (abs.vel.profile.long[[adcp]]$velocity > 2.5)])/
               length(abs.vel.profile.long[[adcp]]$velocity)*100
-  print(percent_faulty[[adcp]])
+  print(paste(round(percent_faulty[[adcp]], digits=1),"% erroneous data", sep=""))
   
   # Set faulty data to NA
   abs.vel.profile.long[[adcp]]$velocity[which(abs.vel.profile.long[[adcp]]$velocity > 2.5)] <- NA
@@ -243,7 +243,7 @@ rm(Mybathy)
 #### Section plot: ggplot ####
 ggplot() +
   scale_y_reverse(limits=c(400,-10), expand = c(0,0))+
-  scale_x_continuous(expand = c(0,0))+ 
+  scale_x_continuous(breaks = c(0,50,100,150,200,250), expand = c(0,0))+ 
   geom_tile(data = data_mba, aes(fill = velocity,
                                  x= Distance, y= Depth)) + 
   theme_classic() +
