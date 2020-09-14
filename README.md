@@ -41,7 +41,35 @@ Larger ADCP data files may be pre-processed using adpEnsembleAverage() to reduce
 
 ## Processing data
 
-This step is done in a for loop to allow for the input of multiple ADCP files. For this reason, it is strongly recommended to use the ensemble averaging method mentioned above if the files are very large. 
+The variables for the processing step are first initialised. 
+
+```
+# Choose date bounds for each file (can be omitted. see cruise.adcp below)
+date = data.frame(as_datetime(c("2018-07-18 21:31:53", "2018-07-21 04:51:53")),
+        as_datetime(c("2018-07-18 21:31:53", "2018-07-23 11:00:00")),
+        as_datetime(c("2018-07-18 21:31:53", "2018-07-23 11:00:00")))
+colnames(date) <- c("1","2","3")
+
+# Initialise variables 
+adp.bin <- c()
+time <- c()
+cruise.adcp <- c()
+distance <- c()
+lon <- c()
+lat <- c()
+v <- c()
+u <- c()
+vel <- c()
+cruise.sf <- c()
+ship.vel <- c()
+vel.abs <- c()
+loni <- c()
+lati <- c()
+abs.vel.profile <- c()
+abs.vel.profile.long <- c()
+percent_faulty <- c()
+```
+The data processing is done in a for loop to allow for the input of multiple ADCP files. For this reason, it is strongly recommended to use the ensemble averaging method mentioned above if the files are very large. 
 
 The data is first bin-mapped by interpolating to uniform depths to compensate for the pitch and roll of the ship. There is an option to subset the data between specific dates/times if necessary. To confirm the locations of the sampling, the subsetted data is converted into a simplfe feature object and visualised using leaflet(). 
 
@@ -212,7 +240,7 @@ rm(Mybathy)
 
 ## Plotting the absolute current velocity using the ggplot2 package
 
-We created a template for a ggplot2 section plot, with a classic theme, to plot the interpolated current velocity data. We recommend ggplot2 over other R plotting packages due to the customisation possibilities. On the x-axis, distance can be replaced with longitude or latitude depending on the layout of the sampling transect. This template uses the colour blind-friendly viridis palette with a customised legend. geom_polygon is used to overlay the bathymetry.
+We created a template for a ggplot2 section plot, with a classic theme, to plot the interpolated current velocity data. We recommend ggplot2 over other R plotting packages due to the customisation possibilities. On the x-axis, distance can be replaced with longitude or latitude depending on the layout of the sampling transect. This template uses the colour blind-friendly viridis palette with a customised legend. geom_polygon is used to overlay the bathymetry. We refer the reader to the optional section in the R code if other station/locations need to be plotted as overlaid points on the section plot. 
 
 ```
 ggplot() +
