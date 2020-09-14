@@ -71,9 +71,9 @@ percent_faulty <- c()
 ```
 The data processing is done in a for loop to allow for the input of multiple ADCP files. For this reason, it is strongly recommended to use the ensemble averaging method mentioned above if the files are very large. 
 
-The data is first bin-mapped by interpolating to uniform depths to compensate for the pitch and roll of the ship. There is an option to subset the data between specific dates/times if necessary. To confirm the locations of the sampling, the subsetted data is converted into a simplfe feature object and visualised using leaflet(). 
+The data is first bin-mapped by interpolating to uniform depths to compensate for the pitch and roll of the ship. There is an option to subset the data between specific dates/times if necessary. To confirm the locations of the sampling, the subsetted data is converted into a simple feature object and visualised using leaflet(). 
 
-Velocity is calculated from the meridional and zonal components using: velocity (in ms^−1) = sqrt(u^2+v^2) and is then used to calculate aboslute velocity by subtracting the ship's average speed. The structure of the data frame is then modified to obtain depth, profile ID, longitude, latitude, distance (calculated to be distance from station 1 using geodDist()), velocity into a single data frame for plotting later on. Spurious data is removed from this data frame using an upper limit (e.g. 2.5 ms^-1) as a cut-off for reasonable values and by changing unreasonable values to 'NA'. A percentage of spurious data is calculated and is useful for assessing general data quality e.g. in the dataset used for testing, all data above 35 m was discarded, likely due to interference from the ship. 
+Velocity is calculated from the meridional and zonal components using: velocity (in ms^−1) = sqrt(u^2+v^2) and is then used to calculate aboslute velocity by subtracting the ship's average speed. The structure of the data frame is then modified to obtain depth, profile ID, longitude, latitude, distance (calculated to be distance from station 1 using geodDist()), velocity into a single data frame for plotting later on. Spurious data are removed from this data frame using an upper limit (e.g. 2.5 ms^-1) as a cut-off for reasonable values and by changing unreasonable values to 'NA'. A percentage of spurious data is calculated and is useful for assessing general data quality e.g. in the dataset used for testing, all data above 35 m was discarded, likely due to interference from the ship. 
 
 ```
 for (adcp in 1:length(adp)) {
@@ -98,8 +98,8 @@ for (adcp in 1:length(adp)) {
   lat[[adcp]] <- cruise.adcp[[adcp]][["firstLatitude"]]
   
   # Calculate velocity --> velocity in ms^−1 = √(U^2+V^2)
-  v[[adcp]] <- cruise.adcp[[adcp]][["v"]][,,1] # u component of velocity
-  u[[adcp]] <- cruise.adcp[[adcp]][["v"]][,,2] # v component of velocity
+  v[[adcp]] <- cruise.adcp[[adcp]][["v"]][,,1] # v component of velocity
+  u[[adcp]] <- cruise.adcp[[adcp]][["v"]][,,2] # u component of velocity
   vel[[adcp]] <- sqrt(v[[adcp]]^2 + u[[adcp]]^2) 
   
   ### Confirm sampling locations
@@ -247,14 +247,14 @@ ggplot() +
   scale_y_reverse(limits=c(400,-10), expand = c(0,0))+
   scale_x_continuous(expand = c(0,0))+ 
   geom_tile(data = data_mba, aes(fill = velocity,
-                                 x= Distance, y= Depth)) + #data_mba_bound
+                                 x= Distance, y= Depth)) +
   theme_classic() +
   geom_contour(aes(z = data_mba$velocity,
                    x = data_mba$Distance,
                    y = data_mba$Depth ), 
-               binwidth = 0.15, #data_mba_bound
+               binwidth = 0.15, 
                colour = "black", alpha = 0.3) + #adds contours
-  geom_text_contour(aes(z = data_mba$velocity, #data_mba_bound
+  geom_text_contour(aes(z = data_mba$velocity, 
                         x = data_mba$Distance,
                         y = data_mba$Depth ),
                     check_overlap = TRUE, binwidth = 0.3, alpha = 0.7) +
