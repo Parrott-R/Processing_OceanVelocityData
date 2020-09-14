@@ -1,20 +1,20 @@
-# Importing, processing, and plotting of shipboard ADCP data
-# Created by Ruan G. Parrott on 09/12/2019
-# Contributed to and edited by Shantelle Smith
-# Last edited 13/09/2020
+# name: Importing, processing, and plotting of shipboard ADCP data
+# version: 1.0.0
+# created by: Ruan G. Parrott on 09/12/2019
+# contributed to and edited by: Shantelle Smith
+# last edited: 13/09/2020
 
 #### Load required packages ####
 require(oce)
-require(ocedata)
 require(tidyverse)
 require(lubridate)
 require(leaflet)
 require(sf)
-require(scales)
 require(MBA)
-require(fossil)
+require(scales)
 require(marmap)
 require(metR)
+require(reshape2)
 #### Read in x number of files containing ADCP data #####
 ### Read in ADCP data (.LTA format) into list for x number of files
 setwd("/Users/shantellesmith/Downloads")
@@ -22,18 +22,6 @@ setwd("/Users/shantellesmith/Downloads")
 adp <- c(read.adp("AGU033002_000000.LTA"),
          read.adp("AGU033003_000000.LTA"),
          read.adp("AGU033004_000000.LTA"))
-
-# Plot raw data of first file (initial qualitative analysis of data)
-plot(adp[[1]], which = c(1:2), 
-     tformat = "%B %d, %Y:%H:%M", 
-     missingColor = "grey", 
-     ylim = c(25,1000),
-     zlim = c(-4,6),
-     useSmoothScatter = TRUE,
-     ytype = "profile",
-     titles = c("Northing Profiles","Northing Profiles" ),
-     col = oceColorsViridis(125),
-     marginsAsImage = TRUE, decimate = FALSE)
 
 #### Process/clean raw data and create modified variables (velocity and distance) ####
 # Choose date bounds for each file (can be omitted. see cruise.adcp below)
@@ -61,18 +49,18 @@ abs.vel.profile <- c()
 abs.vel.profile.long <- c()
 percent_faulty <- c()
 
-
+# Clean data (remove erroneous velocities) and generate distance/velocity variables
 for (adcp in 1:length(adp)) {
-  print(adcp)
-  ### Bin-map an ADP object ###
+  print(paste("Starting to process file",adcp))
+  
+  ### Bin-map adp object 
   # by interpolating velocities, backscatter amplitudes, etc., to uniform depth bins, 
-  # thus compensating for the pitch and roll of the instrument.
+  # compensating for the pitch and roll of the instrument.
   adp.bin[[adcp]] <- binmapAdp(adp[[adcp]])
 
-  ### Extract variables ###
-  time[[adcp]] <- adp[[adcp]][["time"]]
-  
+  ### Extract variables and subset
   # Create subset of dataset between specific dates 
+  time[[adcp]] <- adp[[adcp]][["time"]]
   # Let cruise.adcp = adp.bin if no time subsetting is required
   cruise.adcp[[adcp]] = subset(adp.bin[[adcp]], time >= date[1,adcp] & time <= date[2,adcp])
   
@@ -87,6 +75,7 @@ for (adcp in 1:length(adp)) {
   u[[adcp]] <- cruise.adcp[[adcp]][["v"]][,,2] # v component of velocity
   vel[[adcp]] <- sqrt(v[[adcp]]^2 + u[[adcp]]^2) 
   
+  ### Confirm sampling locations
   # Create simple features object
   cruise.sf[[adcp]] = data.frame(lon[[adcp]],lat[[adcp]],vel[[adcp]])%>%
                         st_as_sf(coords = c("lon..adcp..", "lat..adcp.."))%>% 
@@ -96,19 +85,20 @@ for (adcp in 1:length(adp)) {
   leaflet(data = cruise.sf[[adcp]])%>%
     addTiles()%>%
     addMarkers(popup = ~time[[adcp]])
-
+  
+  ### Calculate absolute velocity and compile other variables into new data frame
   # Calculate ship velocity 
   ship.vel[[adcp]] <- cruise.adcp[[adcp]][["avgSpeed"]]
   
   # Obtain absolute current velocity
   vel.abs[[adcp]] <- abs(vel[[adcp]]-ship.vel[[adcp]])
   
-  # Create abs current velocity profiles
+  # Create absolute current velocity profiles
   abs.vel.profile[[adcp]] <- data.frame(distance[[adcp]],t(vel.abs[[adcp]]))
   colnames(abs.vel.profile[[adcp]]) <- c("distance",paste("profile", 
                             2:length(abs.vel.profile[[adcp]])-1, sep = ""))
   
-  # Make long data frame for abs current velocity profiles 
+  # Make long data frame for absolute current velocity profiles 
   abs.vel.profile.long[[adcp]] <- abs.vel.profile[[adcp]] %>% 
                                 gather(key = "profile", value = "velocity", 
                                        2:length(abs.vel.profile[[adcp]]))
@@ -137,7 +127,7 @@ for (adcp in 1:length(adp)) {
   }
   
   # Find percentage of data that is faulty (data quality analysis)
-  # (>2.5 ms^-1 --> to be edited to appropriate value for respective current)
+  # (>2.5 ms^-1 chosen from literature knowledge --> to be edited to appropriate value for respective current)
   percent_faulty[[adcp]] <- length(abs.vel.profile.long[[adcp]]$velocity[which
               (abs.vel.profile.long[[adcp]]$velocity > 2.5)])/
               length(abs.vel.profile.long[[adcp]]$velocity)*100
@@ -255,21 +245,21 @@ ggplot() +
   scale_y_reverse(limits=c(400,-10), expand = c(0,0))+
   scale_x_continuous(expand = c(0,0))+ 
   geom_tile(data = data_mba, aes(fill = velocity,
-                                 x= Distance, y= Depth)) + #data_mba_bound
+                                 x= Distance, y= Depth)) + 
   theme_classic() +
   geom_contour(aes(z = data_mba$velocity,
                    x = data_mba$Distance,
                    y = data_mba$Depth ), 
-               binwidth = 0.15, #data_mba_bound
-               colour = "black", alpha = 0.3) + #adds contours
-  geom_text_contour(aes(z = data_mba$velocity, #data_mba_bound
+               binwidth = 0.15, 
+               colour = "black", alpha = 0.3) + 
+  geom_text_contour(aes(z = data_mba$velocity, 
                         x = data_mba$Distance,
                         y = data_mba$Depth ),
                     check_overlap = TRUE, binwidth = 0.3, alpha = 0.7) +
-  scale_fill_gradientn(colours = viridis_pal()(10),#rev(rainbow(13)), ##viridis=colour blind friendly
-                       values = rescale(c(0,0.3,0.6)), #0,28,40 nitrate
+  scale_fill_gradientn(colours = viridis_pal()(10),
+                       values = rescale(c(0,0.3,0.6)), 
                        guide = "colorbar", limits=c(0,2.5),oob=squish,
-                       na.value = 'white') + #adjusts your colourbar [rescale(area of focus)] [limits cuts ends of colourbar]
+                       na.value = 'white') + 
   guides(fill = guide_colourbar(barwidth = 0.8, barheight = 15, 
                                 nbin = 50,
                                 draw.ulim = FALSE, draw.llim = FALSE,
@@ -287,8 +277,8 @@ ggplot() +
 pathsave = "" # insert path name
 
 ggsave(plot = last_plot(),
-       filename = "image.png",
+       filename = "sample_image.png",
        path = pathsave,
-       device = "png",
-       units = "cm", width = 18, height = 14)
+       device = "png", dpi = 1200,
+       units = "cm", width = 22, height = 14)
 dev.off()
